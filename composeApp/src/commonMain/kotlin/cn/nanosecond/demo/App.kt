@@ -1,49 +1,67 @@
 package cn.nanosecond.demo
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.resources.painterResource
-
-import demo.composeapp.generated.resources.Res
-import demo.composeapp.generated.resources.compose_multiplatform
+import cn.nanosecond.demo.canvas.CanvasViewModel
+import cn.nanosecond.demo.canvas.CardElement
+import cn.nanosecond.demo.canvas.CanvasOffset
+import cn.nanosecond.demo.canvas.CanvasSize
+import cn.nanosecond.demo.canvas.InfiniteCanvas
 
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
+        val viewModel = remember {
+            CanvasViewModel().apply {
+                // 示例卡片
+                addElement(
+                    CardElement(
+                        id = "card-1",
+                        position = CanvasOffset(100f, 100f),
+                        size = CanvasSize(240f, 180f),
+                        title = "Project Overview",
+                        content = "This is a Kotlin Multiplatform project with Compose Multiplatform for cross-platform UI.",
+                    )
+                )
+                addElement(
+                    CardElement(
+                        id = "card-2",
+                        position = CanvasOffset(450f, 80f),
+                        size = CanvasSize(240f, 180f),
+                        title = "Shared Module",
+                        content = "Contains common business logic shared across all platforms.",
+                        imageUrl = "placeholder",
+                    )
+                )
+                addElement(
+                    CardElement(
+                        id = "card-3",
+                        position = CanvasOffset(200f, 380f),
+                        size = CanvasSize(240f, 160f),
+                        title = "Compose App",
+                        content = "UI layer targeting Android, iOS, Desktop, and Web.",
+                    )
+                )
+                addElement(
+                    CardElement(
+                        id = "card-4",
+                        position = CanvasOffset(550f, 380f),
+                        size = CanvasSize(240f, 160f),
+                        title = "Ktor Server",
+                        content = "Backend server running on JVM with Netty engine.",
+                    )
+                )
             }
         }
+
+        InfiniteCanvas(
+            viewModel = viewModel,
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
