@@ -1,4 +1,4 @@
-package cn.nanosecond.demo.canvas
+package cn.nanosecond.compose.infinitecanvas
 
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

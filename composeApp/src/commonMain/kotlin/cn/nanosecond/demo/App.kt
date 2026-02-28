@@ -6,11 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import cn.nanosecond.demo.canvas.CanvasViewModel
-import cn.nanosecond.demo.canvas.CardElement
-import cn.nanosecond.demo.canvas.CanvasOffset
-import cn.nanosecond.demo.canvas.CanvasSize
-import cn.nanosecond.demo.canvas.InfiniteCanvas
+import cn.nanosecond.compose.infinitecanvas.CanvasViewModel
+import cn.nanosecond.compose.infinitecanvas.CardElement
+import cn.nanosecond.compose.infinitecanvas.CanvasOffset
+import cn.nanosecond.compose.infinitecanvas.CanvasSize
+import cn.nanosecond.compose.infinitecanvas.InfiniteCanvas
 
 @Composable
 @Preview

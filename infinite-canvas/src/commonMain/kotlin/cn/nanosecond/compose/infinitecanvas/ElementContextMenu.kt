@@ -1,4 +1,4 @@
-package cn.nanosecond.demo.canvas
+package cn.nanosecond.compose.infinitecanvas
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -31,22 +32,20 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private val MENU_WIDTH = 200.dp
+private val ELEMENT_MENU_WIDTH = 180.dp
 
 @Composable
-fun CanvasContextMenu(
+fun ElementContextMenu(
     state: ContextMenuState,
     canvasSize: IntSize,
-    hasClipboard: Boolean,
     onDismiss: () -> Unit,
     onRightClick: (Offset) -> Unit,
-    onPaste: () -> Unit,
-    onSelectAll: () -> Unit,
-    onExportPng: () -> Unit,
-    onExportSvg: () -> Unit,
-    onCopyPng: () -> Unit,
-    onCopySvg: () -> Unit,
-    onSubmenuToggle: (String?) -> Unit,
+    onCopy: () -> Unit,
+    onCut: () -> Unit,
+    onDelete: () -> Unit,
+    onDuplicate: () -> Unit,
+    onBringToFront: () -> Unit,
+    onSendToBack: () -> Unit,
 ) {
     // 点击外部关闭: 左键关闭，右键直接打开新菜单
     Box(
@@ -75,82 +74,54 @@ fun CanvasContextMenu(
     Column(
         modifier = Modifier
             .menuPosition(state.screenPosition, canvasSize)
-            .width(MENU_WIDTH)
+            .width(ELEMENT_MENU_WIDTH)
             .shadow(8.dp, shape)
             .clip(shape)
             .background(Color.White)
             .padding(vertical = 4.dp),
     ) {
-        MenuItem(
-            label = "粘贴",
-            shortcut = "Ctrl+V",
-            enabled = hasClipboard,
-            onClick = { onPaste(); onDismiss() },
+        ElementMenuItem(label = "复制", shortcut = "Ctrl+C", onClick = { onCopy(); onDismiss() })
+        ElementMenuItem(label = "剪切", shortcut = "Ctrl+X", onClick = { onCut(); onDismiss() })
+        ElementMenuItem(label = "复制副本", shortcut = "Ctrl+D", onClick = { onDuplicate(); onDismiss() })
+
+        ElementMenuDivider()
+
+        ElementMenuItem(label = "置于顶层", onClick = { onBringToFront(); onDismiss() })
+        ElementMenuItem(label = "置于底层", onClick = { onSendToBack(); onDismiss() })
+
+        ElementMenuDivider()
+
+        ElementMenuItem(
+            label = "删除",
+            shortcut = "Del",
+            color = Color(0xFFE53935),
+            onClick = { onDelete(); onDismiss() },
         )
-
-        MenuDivider()
-
-        MenuItem(
-            label = "选中全部",
-            shortcut = "Ctrl+A",
-            onClick = { onSelectAll(); onDismiss() },
-        )
-
-        MenuDivider()
-
-        ExpandableMenuItem(
-            label = "导出为",
-            isExpanded = state.expandedSubmenu == "export",
-            onToggle = {
-                onSubmenuToggle(if (state.expandedSubmenu == "export") null else "export")
-            },
-        ) {
-            MenuItem(label = "PNG", indented = true, onClick = { onExportPng(); onDismiss() })
-            MenuItem(label = "SVG", indented = true, onClick = { onExportSvg(); onDismiss() })
-        }
-
-        ExpandableMenuItem(
-            label = "复制为",
-            isExpanded = state.expandedSubmenu == "copy",
-            onToggle = {
-                onSubmenuToggle(if (state.expandedSubmenu == "copy") null else "copy")
-            },
-        ) {
-            MenuItem(label = "PNG", indented = true, onClick = { onCopyPng(); onDismiss() })
-            MenuItem(label = "SVG", indented = true, onClick = { onCopySvg(); onDismiss() })
-        }
     }
 }
 
 @Composable
-private fun MenuItem(
+private fun ElementMenuItem(
     label: String,
     shortcut: String? = null,
-    enabled: Boolean = true,
-    indented: Boolean = false,
+    color: Color = Color(0xFF333333),
     onClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
-    val bgColor = when {
-        !enabled -> Color.Transparent
-        isHovered -> Color(0xFFF0F0F0)
-        else -> Color.Transparent
-    }
-    val textColor = if (enabled) Color(0xFF333333) else Color(0xFFBBBBBB)
-    val startPadding = if (indented) 28.dp else 12.dp
+    val bgColor = if (isHovered) Color(0xFFF0F0F0) else Color.Transparent
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .hoverable(interactionSource)
-            .let { if (enabled) it.clickable(onClick = onClick) else it }
+            .clickable(onClick = onClick)
             .background(bgColor)
-            .padding(start = startPadding, end = 12.dp, top = 8.dp, bottom = 8.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = label, fontSize = 13.sp, color = textColor)
+        Text(text = label, fontSize = 13.sp, color = color)
         if (shortcut != null) {
             Text(text = shortcut, fontSize = 11.sp, color = Color(0xFFAAAAAA))
         }
@@ -158,38 +129,7 @@ private fun MenuItem(
 }
 
 @Composable
-private fun ExpandableMenuItem(
-    label: String,
-    isExpanded: Boolean,
-    onToggle: () -> Unit,
-    content: @Composable () -> Unit,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isHovered by interactionSource.collectIsHoveredAsState()
-    val bgColor = if (isHovered || isExpanded) Color(0xFFF0F0F0) else Color.Transparent
-    val arrow = if (isExpanded) "▾" else "▸"
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .hoverable(interactionSource)
-            .clickable(onClick = onToggle)
-            .background(bgColor)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-    ) {
-        Text(text = label, fontSize = 13.sp, color = Color(0xFF333333))
-        Text(text = arrow, fontSize = 11.sp, color = Color(0xFF999999))
-    }
-
-    if (isExpanded) {
-        content()
-    }
-}
-
-@Composable
-private fun MenuDivider() {
+private fun ElementMenuDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp),
         thickness = 1.dp,

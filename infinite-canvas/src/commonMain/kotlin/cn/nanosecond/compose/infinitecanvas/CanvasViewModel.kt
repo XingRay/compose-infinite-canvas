@@ -1,4 +1,4 @@
-package cn.nanosecond.demo.canvas
+package cn.nanosecond.compose.infinitecanvas
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.getValue
@@ -7,12 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
-import cn.nanosecond.demo.canvas.AnchorPosition
-import cn.nanosecond.demo.canvas.CanvasElement
-import cn.nanosecond.demo.canvas.CanvasOffset
-import cn.nanosecond.demo.canvas.CardElement
-import cn.nanosecond.demo.canvas.Connection
-import cn.nanosecond.demo.canvas.generateId
 
 class CanvasViewModel : ViewModel() {
     val viewport = ViewportState()
@@ -55,14 +49,12 @@ class CanvasViewModel : ViewModel() {
 
     fun switchMode(mode: CanvasMode) {
         canvasMode = mode
-        // 在临时模式下点击 Pan 按钮 → 正式进入 Pan，退出临时状态
         if (mode == CanvasMode.Pan && isTempPanMode) {
             isTempPanMode = false
         }
     }
 
     fun onSpaceDown() {
-        // 只在 Select 模式下才能进入临时小手模式
         if (canvasMode == CanvasMode.Select && !isTempPanMode) {
             isTempPanMode = true
         }
@@ -71,7 +63,6 @@ class CanvasViewModel : ViewModel() {
     fun onSpaceUp() {
         if (isTempPanMode) {
             isTempPanMode = false
-            // canvasMode 保持 Select（因为进入临时模式前就是 Select）
         }
     }
 
@@ -85,18 +76,15 @@ class CanvasViewModel : ViewModel() {
         selectedElementIds = selectedElementIds - id
     }
 
-    /** 删除所有选中元素 */
     fun removeSelectedElements() {
         selectedElementIds.toList().forEach { removeElement(it) }
     }
 
-    /** 复制副本 (偏移 20px) */
     fun duplicateElement(id: String) {
         val el = _elements.find { it.id == id } ?: return
         val copy = el.copyWithPosition(
             CanvasOffset(el.position.x + 20f, el.position.y + 20f)
         )
-        // copyWithPosition 保留了原 id，需要生成新元素
         val newEl = when (copy) {
             is CardElement -> copy.copy(id = generateId())
         }
@@ -104,7 +92,6 @@ class CanvasViewModel : ViewModel() {
         selectedElementIds = setOf(newEl.id)
     }
 
-    /** 置于顶层 */
     fun bringToFront(id: String) {
         val index = _elements.indexOfFirst { it.id == id }
         if (index >= 0 && index < _elements.lastIndex) {
@@ -113,7 +100,6 @@ class CanvasViewModel : ViewModel() {
         }
     }
 
-    /** 置于底层 */
     fun sendToBack(id: String) {
         val index = _elements.indexOfFirst { it.id == id }
         if (index > 0) {
@@ -137,7 +123,6 @@ class CanvasViewModel : ViewModel() {
         }
     }
 
-    /** 移动所有选中元素 */
     fun moveSelectedElements(worldDelta: Offset) {
         selectedElementIds.forEach { id -> moveElement(id, worldDelta) }
     }
@@ -152,7 +137,6 @@ class CanvasViewModel : ViewModel() {
 
     fun isSelected(id: String): Boolean = id in selectedElementIds
 
-    /** 查找屏幕坐标命中的元素 (从上层往下找) */
     fun hitTest(screenPos: Offset): CanvasElement? {
         val worldPos = viewport.screenToWorld(screenPos)
         return _elements.lastOrNull { el ->
@@ -161,9 +145,7 @@ class CanvasViewModel : ViewModel() {
         }
     }
 
-    /** 检测是否点击了选中元素的锚点，返回锚点信息 */
     fun hitTestAnchor(screenPos: Offset, hitRadius: Float = 20f): Pair<String, AnchorPosition>? {
-        // 检查所有选中元素的锚点
         for (selectedId in selectedElementIds) {
             val el = _elements.find { it.id == selectedId } ?: continue
             for (anchor in AnchorPosition.entries) {
@@ -178,7 +160,6 @@ class CanvasViewModel : ViewModel() {
         return null
     }
 
-    /** 检测点击是否命中连接线 (在贝塞尔曲线附近) */
     fun hitTestConnection(screenPos: Offset, hitRadius: Float = 12f): Connection? {
         val worldPos = viewport.screenToWorld(screenPos)
         return _connections.firstOrNull { conn ->
@@ -238,7 +219,6 @@ class CanvasViewModel : ViewModel() {
         _connections.removeAll { it.id == id }
     }
 
-    /** 获取元素锚点的世界坐标 */
     fun getAnchorWorldPosition(elementId: String, anchor: AnchorPosition): Offset? {
         val el = _elements.find { it.id == elementId } ?: return null
         return when (anchor) {
@@ -249,7 +229,6 @@ class CanvasViewModel : ViewModel() {
         }
     }
 
-    /** 根据两点相对位置，自动选择最佳锚点 */
     fun findBestAnchor(elementId: String, worldPos: Offset): AnchorPosition {
         val el = _elements.find { it.id == elementId } ?: return AnchorPosition.Right
         val cx = el.position.x + el.size.width / 2
@@ -301,7 +280,6 @@ class CanvasViewModel : ViewModel() {
 
 /** 框选矩形 (屏幕坐标) */
 data class SelectionRect(val start: Offset, val end: Offset) {
-    /** 转换为标准化的世界坐标 Rect */
     fun toWorldRect(viewport: ViewportState): Rect {
         val worldStart = viewport.screenToWorld(start)
         val worldEnd = viewport.screenToWorld(end)
@@ -313,7 +291,6 @@ data class SelectionRect(val start: Offset, val end: Offset) {
         )
     }
 
-    /** 屏幕坐标的标准化矩形 (用于绘制) */
     fun toScreenRect(): Rect = Rect(
         left = minOf(start.x, end.x),
         top = minOf(start.y, end.y),
@@ -322,7 +299,6 @@ data class SelectionRect(val start: Offset, val end: Offset) {
     )
 }
 
-/** 粗略判断点是否在贝塞尔曲线附近 (采样法) */
 private fun isPointNearBezier(
     point: Offset,
     from: Offset,
@@ -377,10 +353,8 @@ enum class CanvasMode {
     Select, Pan
 }
 
-/** 右键菜单状态 */
 data class ContextMenuState(
     val screenPosition: Offset,
-    /** 右键命中的元素 ID, null 表示画布空白处 */
     val targetElementId: String? = null,
     val expandedSubmenu: String? = null,
 )

@@ -1,4 +1,4 @@
-package cn.nanosecond.demo.canvas
+package cn.nanosecond.compose.infinitecanvas
 
 enum class AnchorPosition {
     Top, Bottom, Left, Right

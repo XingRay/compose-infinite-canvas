@@ -1,4 +1,4 @@
-package cn.nanosecond.demo.canvas
+package cn.nanosecond.compose.infinitecanvas
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import cn.nanosecond.demo.canvas.connection.drawBezierConnection
-import cn.nanosecond.demo.canvas.element.CardElementView
-import cn.nanosecond.demo.canvas.gesture.canvasGestures
+import cn.nanosecond.compose.infinitecanvas.connection.drawBezierConnection
+import cn.nanosecond.compose.infinitecanvas.element.CardElementView
+import cn.nanosecond.compose.infinitecanvas.gesture.canvasGestures
 
 @Composable
 fun InfiniteCanvas(
@@ -46,13 +46,11 @@ fun InfiniteCanvas(
     val focusRequester = remember { FocusRequester() }
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
 
-    // 自动获取焦点以接收键盘事件
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        // 画布区域
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -66,12 +64,10 @@ fun InfiniteCanvas(
                                 viewModel.onSpaceDown()
                                 true
                             }
-
                             KeyEventType.KeyUp -> {
                                 viewModel.onSpaceUp()
                                 true
                             }
-
                             else -> false
                         }
                     } else {
@@ -82,7 +78,6 @@ fun InfiniteCanvas(
                 .canvasGestures(viewModel)
                 .onSizeChanged { canvasSize = it }
         ) {
-            // 底层: 网格 + 连接线 + 框选矩形
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawGrid(viewport)
                 drawConnections(viewModel, viewport)
@@ -90,7 +85,6 @@ fun InfiniteCanvas(
                 drawSelectionRect(viewModel)
             }
 
-            // 上层: 元素
             viewModel.elements.forEach { element ->
                 when (element) {
                     is CardElement -> {
@@ -104,7 +98,6 @@ fun InfiniteCanvas(
             }
         }
 
-        // 左下角控制面板
         BottomControls(
             viewModel = viewModel,
             canvasSize = canvasSize,
@@ -115,7 +108,6 @@ fun InfiniteCanvas(
                 .zIndex(10f),
         )
 
-        // 右键上下文菜单
         val contextMenu = viewModel.contextMenuState
         if (contextMenu != null) {
             val dismissMenu: () -> Unit = {
@@ -141,7 +133,6 @@ fun InfiniteCanvas(
             }
 
             if (contextMenu.targetElementId != null) {
-                // 卡片菜单
                 val elementId = contextMenu.targetElementId
                 ElementContextMenu(
                     state = contextMenu,
@@ -156,11 +147,10 @@ fun InfiniteCanvas(
                     onSendToBack = { viewModel.sendToBack(elementId) },
                 )
             } else {
-                // 画布菜单
                 CanvasContextMenu(
                     state = contextMenu,
                     canvasSize = canvasSize,
-                    hasClipboard = false, // TODO: 接入剪贴板检测
+                    hasClipboard = false,
                     onDismiss = dismissMenu,
                     onRightClick = handleRightClick,
                     onPaste = { /* TODO */ },
@@ -178,8 +168,6 @@ fun InfiniteCanvas(
     }
 }
 
-// --- 左下角控制面板 ---
-
 @Composable
 private fun BottomControls(
     viewModel: CanvasViewModel,
@@ -191,7 +179,6 @@ private fun BottomControls(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // 模式切换
         ModeSwitch(
             currentMode = viewModel.canvasMode,
             onModeChange = {
@@ -199,8 +186,6 @@ private fun BottomControls(
                 onInteraction()
             },
         )
-
-        // 缩放控件
         ZoomControls(
             scalePercent = viewModel.viewport.scalePercent,
             onZoomIn = {
@@ -221,8 +206,6 @@ private fun BottomControls(
         )
     }
 }
-
-// --- 模式切换 ---
 
 @Composable
 private fun ModeSwitch(
@@ -281,8 +264,6 @@ private fun ModeButton(
     }
 }
 
-// --- 缩放控件 ---
-
 @Composable
 private fun ZoomControls(
     scalePercent: Int,
@@ -300,10 +281,7 @@ private fun ZoomControls(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(0.dp),
     ) {
-        // 缩小按钮
         ZoomButton(icon = MinusIcon, contentDescription = "Zoom out", onClick = onZoomOut)
-
-        // 百分比显示 (点击重置为 100%)
         Box(
             modifier = Modifier
                 .width(56.dp)
@@ -320,8 +298,6 @@ private fun ZoomControls(
                 textAlign = TextAlign.Center,
             )
         }
-
-        // 放大按钮
         ZoomButton(icon = PlusIcon, contentDescription = "Zoom in", onClick = onZoomIn)
     }
 }
@@ -353,43 +329,29 @@ private fun ZoomButton(
 
 private val ArrowIcon: ImageVector by lazy {
     ImageVector.Builder(
-        name = "Arrow",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
-        viewportWidth = 24f,
-        viewportHeight = 24f,
+        name = "Arrow", defaultWidth = 24.dp, defaultHeight = 24.dp,
+        viewportWidth = 24f, viewportHeight = 24f,
     ).apply {
         path(fill = androidx.compose.ui.graphics.SolidColor(Color.Black)) {
-            moveTo(7f, 2f)
-            lineTo(7f, 20f)
-            lineTo(11.5f, 15.5f)
-            lineTo(16f, 22f)
-            lineTo(18f, 21f)
-            lineTo(13.5f, 14.5f)
-            lineTo(19f, 14f)
-            close()
+            moveTo(7f, 2f); lineTo(7f, 20f); lineTo(11.5f, 15.5f)
+            lineTo(16f, 22f); lineTo(18f, 21f); lineTo(13.5f, 14.5f)
+            lineTo(19f, 14f); close()
         }
     }.build()
 }
 
 private val HandIcon: ImageVector by lazy {
     ImageVector.Builder(
-        name = "Hand",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
-        viewportWidth = 24f,
-        viewportHeight = 24f,
+        name = "Hand", defaultWidth = 24.dp, defaultHeight = 24.dp,
+        viewportWidth = 24f, viewportHeight = 24f,
     ).apply {
         path(fill = androidx.compose.ui.graphics.SolidColor(Color.Black)) {
             moveTo(12f, 2f)
             curveTo(12.8f, 2f, 13.5f, 2.7f, 13.5f, 3.5f)
-            lineTo(13.5f, 10f)
-            lineTo(15f, 10f)
-            lineTo(15f, 5.5f)
+            lineTo(13.5f, 10f); lineTo(15f, 10f); lineTo(15f, 5.5f)
             curveTo(15f, 4.7f, 15.7f, 4f, 16.5f, 4f)
             curveTo(17.3f, 4f, 18f, 4.7f, 18f, 5.5f)
-            lineTo(18f, 10f)
-            lineTo(19.5f, 10.5f)
+            lineTo(18f, 10f); lineTo(19.5f, 10.5f)
             curveTo(19.5f, 9.7f, 20.2f, 9f, 21f, 9f)
             curveTo(21.8f, 9f, 22f, 9.7f, 22f, 10.5f)
             lineTo(22f, 16f)
@@ -399,9 +361,7 @@ private val HandIcon: ImageVector by lazy {
             lineTo(4f, 13.5f)
             curveTo(3.5f, 12.8f, 3.7f, 11.8f, 4.4f, 11.3f)
             curveTo(5.1f, 10.8f, 6.1f, 11f, 6.6f, 11.7f)
-            lineTo(8.5f, 14.5f)
-            lineTo(8.5f, 14f)
-            lineTo(10.5f, 14f)
+            lineTo(8.5f, 14.5f); lineTo(8.5f, 14f); lineTo(10.5f, 14f)
             lineTo(10.5f, 3.5f)
             curveTo(10.5f, 2.7f, 11.2f, 2f, 12f, 2f)
             close()
@@ -411,44 +371,25 @@ private val HandIcon: ImageVector by lazy {
 
 private val MinusIcon: ImageVector by lazy {
     ImageVector.Builder(
-        name = "Minus",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
-        viewportWidth = 24f,
-        viewportHeight = 24f,
+        name = "Minus", defaultWidth = 24.dp, defaultHeight = 24.dp,
+        viewportWidth = 24f, viewportHeight = 24f,
     ).apply {
         path(fill = androidx.compose.ui.graphics.SolidColor(Color.Black)) {
-            moveTo(5f, 11f)
-            lineTo(19f, 11f)
-            lineTo(19f, 13f)
-            lineTo(5f, 13f)
-            close()
+            moveTo(5f, 11f); lineTo(19f, 11f); lineTo(19f, 13f); lineTo(5f, 13f); close()
         }
     }.build()
 }
 
 private val PlusIcon: ImageVector by lazy {
     ImageVector.Builder(
-        name = "Plus",
-        defaultWidth = 24.dp,
-        defaultHeight = 24.dp,
-        viewportWidth = 24f,
-        viewportHeight = 24f,
+        name = "Plus", defaultWidth = 24.dp, defaultHeight = 24.dp,
+        viewportWidth = 24f, viewportHeight = 24f,
     ).apply {
         path(fill = androidx.compose.ui.graphics.SolidColor(Color.Black)) {
-            moveTo(11f, 5f)
-            lineTo(13f, 5f)
-            lineTo(13f, 11f)
-            lineTo(19f, 11f)
-            lineTo(19f, 13f)
-            lineTo(13f, 13f)
-            lineTo(13f, 19f)
-            lineTo(11f, 19f)
-            lineTo(11f, 13f)
-            lineTo(5f, 13f)
-            lineTo(5f, 11f)
-            lineTo(11f, 11f)
-            close()
+            moveTo(11f, 5f); lineTo(13f, 5f); lineTo(13f, 11f)
+            lineTo(19f, 11f); lineTo(19f, 13f); lineTo(13f, 13f)
+            lineTo(13f, 19f); lineTo(11f, 19f); lineTo(11f, 13f)
+            lineTo(5f, 13f); lineTo(5f, 11f); lineTo(11f, 11f); close()
         }
     }.build()
 }

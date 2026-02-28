@@ -1,4 +1,4 @@
-package cn.nanosecond.demo.canvas.element
+package cn.nanosecond.compose.infinitecanvas.element
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,9 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.nanosecond.demo.canvas.AnchorPosition
-import cn.nanosecond.demo.canvas.CardElement
-import cn.nanosecond.demo.canvas.ViewportState
+import cn.nanosecond.compose.infinitecanvas.AnchorPosition
+import cn.nanosecond.compose.infinitecanvas.CardElement
+import cn.nanosecond.compose.infinitecanvas.ViewportState
 
 @Composable
 fun CardElementView(

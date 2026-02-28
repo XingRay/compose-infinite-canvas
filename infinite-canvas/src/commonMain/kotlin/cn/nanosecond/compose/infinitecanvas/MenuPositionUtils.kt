@@ -1,4 +1,4 @@
-package cn.nanosecond.demo.canvas
+package cn.nanosecond.compose.infinitecanvas
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset

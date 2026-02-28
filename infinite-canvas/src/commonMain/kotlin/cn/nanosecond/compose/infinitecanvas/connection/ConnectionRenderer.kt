@@ -1,4 +1,4 @@
-package cn.nanosecond.demo.canvas.connection
+package cn.nanosecond.compose.infinitecanvas.connection
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import cn.nanosecond.demo.canvas.AnchorPosition
+import cn.nanosecond.compose.infinitecanvas.AnchorPosition
 import kotlin.math.abs
 
 /**

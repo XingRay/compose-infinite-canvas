@@ -12,7 +12,9 @@
       "Bash(rm:*)",
       "Bash(./gradlew :composeApp:compileKotlinDesktop:*)",
       "Bash(./gradlew :composeApp:compileKotlinJvm:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(./gradlew :infinite-canvas:jvmJar:*)",
+      "Bash(./gradlew :composeApp:jvmJar:*)"
     ]
   }
 }

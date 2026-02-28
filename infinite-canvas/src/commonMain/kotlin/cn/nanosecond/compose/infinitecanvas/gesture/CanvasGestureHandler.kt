@@ -1,4 +1,4 @@
-package cn.nanosecond.demo.canvas.gesture
+package cn.nanosecond.compose.infinitecanvas.gesture
 
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -6,31 +6,12 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.*
-import cn.nanosecond.demo.canvas.CanvasMode
-import cn.nanosecond.demo.canvas.CanvasViewModel
-import cn.nanosecond.demo.canvas.ContextMenuState
-import cn.nanosecond.demo.canvas.DragMode
+import cn.nanosecond.compose.infinitecanvas.CanvasMode
+import cn.nanosecond.compose.infinitecanvas.CanvasViewModel
+import cn.nanosecond.compose.infinitecanvas.ContextMenuState
+import cn.nanosecond.compose.infinitecanvas.DragMode
 import kotlin.math.sqrt
 
-/**
- * 画布手势处理 (根据 CanvasMode 分发):
- *
- * Select 模式:
- * - 点击元素 → 选中
- * - 点击连接线 → 删除
- * - 拖拽锚点 → 创建连接线
- * - 拖拽元素 → 移动选中元素
- * - 拖拽空白 → 框选
- *
- * Pan 模式:
- * - 所有拖拽 → 平移画布
- *
- * 通用:
- * - Ctrl+滚轮 → 缩放
- * - 滚轮 → 上下滑动画布
- * - Shift+滚轮 → 左右滑动画布
- * - 双指捏合 → 缩放 + 平移 (触屏)
- */
 @OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.canvasGestures(viewModel: CanvasViewModel): Modifier = this
     // 右键菜单检测
@@ -43,7 +24,6 @@ fun Modifier.canvasGestures(viewModel: CanvasViewModel): Modifier = this
                     val pos = event.changes.firstOrNull()?.position ?: continue
                     val hit = viewModel.hitTest(pos)
                     if (hit != null) {
-                        // 右键点击卡片 → 卡片菜单
                         if (!viewModel.isSelected(hit.id)) {
                             viewModel.selectElement(hit.id)
                         }
@@ -52,7 +32,6 @@ fun Modifier.canvasGestures(viewModel: CanvasViewModel): Modifier = this
                             targetElementId = hit.id,
                         )
                     } else {
-                        // 右键点击空白 → 画布菜单
                         viewModel.contextMenuState = ContextMenuState(screenPosition = pos)
                     }
                     event.changes.forEach { it.consume() }
@@ -78,11 +57,9 @@ fun Modifier.canvasGestures(viewModel: CanvasViewModel): Modifier = this
                     val centroid = Offset((p1.x + p2.x) / 2f, (p1.y + p2.y) / 2f)
 
                     if (!isMultiTouch) {
-                        // 刚进入多指模式
                         isMultiTouch = true
                         prevDistance = distance
                         prevCentroid = centroid
-                        // 取消当前可能正在进行的单指操作
                         when (viewModel.dragMode) {
                             DragMode.BoxSelect -> viewModel.cancelBoxSelect()
                             DragMode.Connection -> viewModel.cancelDraggingConnection()
@@ -90,12 +67,10 @@ fun Modifier.canvasGestures(viewModel: CanvasViewModel): Modifier = this
                         }
                         viewModel.dragMode = DragMode.None
                     } else {
-                        // 计算缩放
                         if (prevDistance > 1f && distance > 1f) {
                             val zoomFactor = distance / prevDistance
                             viewModel.viewport.zoomBy(zoomFactor, centroid)
                         }
-                        // 计算平移
                         val panDelta = centroid - prevCentroid
                         viewModel.viewport.panBy(panDelta)
 
@@ -103,13 +78,10 @@ fun Modifier.canvasGestures(viewModel: CanvasViewModel): Modifier = this
                         prevCentroid = centroid
                     }
 
-                    // 消费所有变化，防止传递给单指手势
                     event.changes.forEach { it.consume() }
                 } else {
                     if (isMultiTouch) {
-                        // 退出多指模式
                         isMultiTouch = false
-                        // 消费剩余的 change，防止触发单指手势
                         event.changes.forEach { it.consume() }
                     }
                 }
@@ -191,20 +163,16 @@ fun Modifier.canvasGestures(viewModel: CanvasViewModel): Modifier = this
                         val worldPos = viewModel.viewport.screenToWorld(change.position)
                         viewModel.updateDraggingConnection(worldPos)
                     }
-
                     DragMode.MoveElement -> {
                         val worldDelta = dragAmount / viewModel.viewport.scale
                         viewModel.moveSelectedElements(worldDelta)
                     }
-
                     DragMode.Pan -> {
                         viewModel.viewport.panBy(dragAmount)
                     }
-
                     DragMode.BoxSelect -> {
                         viewModel.updateBoxSelect(change.position)
                     }
-
                     DragMode.None -> {}
                 }
                 change.consume()
@@ -218,11 +186,9 @@ fun Modifier.canvasGestures(viewModel: CanvasViewModel): Modifier = this
                             viewModel.finishDraggingConnection(screenPos)
                         }
                     }
-
                     DragMode.BoxSelect -> {
                         viewModel.finishBoxSelect()
                     }
-
                     else -> {}
                 }
                 viewModel.dragMode = DragMode.None
