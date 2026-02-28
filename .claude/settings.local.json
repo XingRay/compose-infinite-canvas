@@ -14,7 +14,8 @@
       "Bash(./gradlew :composeApp:compileKotlinJvm:*)",
       "Bash(ls:*)",
       "Bash(./gradlew :infinite-canvas:jvmJar:*)",
-      "Bash(./gradlew :composeApp:jvmJar:*)"
+      "Bash(./gradlew :composeApp:jvmJar:*)",
+      "Bash(./gradlew clean:*)"
     ]
   }
 }

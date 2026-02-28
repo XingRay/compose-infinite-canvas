@@ -9,22 +9,15 @@ plugins {
     `maven-publish`
 }
 
+group = "com.github.XingRay"
+version = "0.1.2"
+
 kotlin {
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
         publishLibraryVariants("release")
-    }
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "InfiniteCanvas"
-            isStatic = true
-        }
     }
 
     jvm()
