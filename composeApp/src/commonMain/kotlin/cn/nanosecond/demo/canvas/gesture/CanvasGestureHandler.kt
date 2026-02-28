@@ -38,7 +38,8 @@ fun Modifier.canvasGestures(viewModel: CanvasViewModel): Modifier = this
         awaitPointerEventScope {
             while (true) {
                 val event = awaitPointerEvent()
-                if (event.type == PointerEventType.Press && event.buttons.isSecondaryPressed) {
+                if (event.type == PointerEventType.Press && event.buttons.isSecondaryPressed
+                    && viewModel.effectiveMode == CanvasMode.Select) {
                     val pos = event.changes.firstOrNull()?.position ?: continue
                     val hit = viewModel.hitTest(pos)
                     if (hit != null) {

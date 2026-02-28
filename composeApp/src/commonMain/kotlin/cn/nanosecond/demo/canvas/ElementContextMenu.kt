@@ -2,7 +2,6 @@ package cn.nanosecond.demo.canvas
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -24,7 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -37,6 +39,7 @@ fun ElementContextMenu(
     state: ContextMenuState,
     canvasSize: IntSize,
     onDismiss: () -> Unit,
+    onRightClick: (Offset) -> Unit,
     onCopy: () -> Unit,
     onCut: () -> Unit,
     onDelete: () -> Unit,
@@ -44,12 +47,25 @@ fun ElementContextMenu(
     onBringToFront: () -> Unit,
     onSendToBack: () -> Unit,
 ) {
-    // 左键点击外部关闭 (不拦截右键)
+    // 点击外部关闭: 左键关闭，右键直接打开新菜单
     Box(
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
-                detectTapGestures { onDismiss() }
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        if (event.type == PointerEventType.Press) {
+                            if (event.buttons.isSecondaryPressed) {
+                                val pos = event.changes.firstOrNull()?.position
+                                if (pos != null) onRightClick(pos)
+                            } else {
+                                onDismiss()
+                            }
+                            event.changes.forEach { it.consume() }
+                        }
+                    }
+                }
             }
     )
 
