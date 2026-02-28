@@ -1,4 +1,4 @@
-rootProject.name = "demo"
+rootProject.name = "compose-infinite-canvas"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -33,5 +33,3 @@ plugins {
 }
 
 include(":composeApp")
-include(":server")
-include(":shared")
