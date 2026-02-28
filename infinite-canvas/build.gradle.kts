@@ -50,7 +50,7 @@ kotlin {
 }
 
 android {
-    namespace = "cn.nanosecond.compose.infinitecanvas"
+    namespace = "io.github.xingray.compose.infinitecanvas"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {

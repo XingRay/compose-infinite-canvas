@@ -47,7 +47,7 @@ implementation("com.github.XingRay:compose-infinite-canvas:0.1.0")
 ## Usage
 
 ```kotlin
-import cn.nanosecond.compose.infinitecanvas.*
+import io.github.xingray.compose.infinitecanvas.*
 
 @Composable
 fun MyCanvas() {
@@ -83,7 +83,7 @@ fun MyCanvas() {
 compose-infinite-canvas/
 ├── infinite-canvas/          # Library module (publishable)
 │   └── src/commonMain/
-│       └── cn.nanosecond.compose.infinitecanvas/
+│       └── io.github.xingray.compose.infinitecanvas/
 │           ├── CanvasElement.kt        # Element data models
 │           ├── Connection.kt           # Connection data model
 │           ├── ViewportState.kt        # Pan & zoom state
@@ -165,7 +165,7 @@ implementation("com.github.XingRay:compose-infinite-canvas:0.1.0")
 ## 使用示例
 
 ```kotlin
-import cn.nanosecond.compose.infinitecanvas.*
+import io.github.xingray.compose.infinitecanvas.*
 
 @Composable
 fun MyCanvas() {

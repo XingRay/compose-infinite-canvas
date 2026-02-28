@@ -67,11 +67,11 @@ kotlin {
 }
 
 android {
-    namespace = "cn.nanosecond.demo"
+    namespace = "io.github.xingray.demo"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "cn.nanosecond.demo"
+        applicationId = "io.github.xingray.demo"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -99,11 +99,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "cn.nanosecond.demo.MainKt"
+        mainClass = "io.github.xingray.demo.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "cn.nanosecond.demo"
+            packageName = "io.github.xingray.demo"
             packageVersion = "1.0.0"
         }
     }
