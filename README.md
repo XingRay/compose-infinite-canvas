@@ -1,100 +1,206 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM), Server.
+# Compose Infinite Canvas
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-    - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-    - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-      For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-      the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-      Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-      folder is the appropriate location.
+A Compose Multiplatform infinite canvas library for building node-based editors, whiteboards, and diagram tools.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+[中文文档](#中文文档)
 
-* [/server](./server/src/main/kotlin) is for the Ktor server application.
+## Features
 
-* [/shared](./shared/src) is for the code that will be shared between all targets in the project.
-  The most important subfolder is [commonMain](./shared/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
+- **Infinite Canvas** — Pan and zoom with no boundaries
+- **Card Elements** — Draggable cards with title, content, and image placeholder
+- **Connections** — Bezier curve connections between element anchor points
+- **Gestures** — Full gesture support:
+  - Click to select, drag to move elements
+  - Drag from anchor to create connections
+  - Click connection to delete
+  - Box select (drag on empty area)
+  - Ctrl+Scroll to zoom, Scroll to pan
+  - Pinch to zoom on touch devices
+  - Spacebar for temporary pan mode
+- **Context Menus** — Right-click menus for canvas and elements
+- **Multiplatform** — Android, iOS, Desktop (JVM), Web (JS/WASM)
 
-### Build and Run Android Application
+## Installation
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
+### JitPack
 
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+Add the JitPack repository to your `settings.gradle.kts`:
 
-### Build and Run Desktop (JVM) Application
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+}
+```
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
+Add the dependency to your `build.gradle.kts`:
 
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+```kotlin
+implementation("com.github.XingRay:compose-infinite-canvas:0.1.0")
+```
 
-### Build and Run Server
+> **Note:** JitPack builds on Linux, so iOS targets are not available via JitPack. iOS developers should build from source.
 
-To build and run the development version of the server, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
+## Usage
 
-- on macOS/Linux
-  ```shell
-  ./gradlew :server:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :server:run
-  ```
+```kotlin
+import cn.nanosecond.compose.infinitecanvas.*
 
-### Build and Run Web Application
+@Composable
+fun MyCanvas() {
+    val viewModel = remember {
+        CanvasViewModel().apply {
+            addElement(
+                CardElement(
+                    position = CanvasOffset(100f, 100f),
+                    title = "Hello",
+                    content = "This is a card on the infinite canvas.",
+                )
+            )
+            addElement(
+                CardElement(
+                    position = CanvasOffset(450f, 100f),
+                    title = "World",
+                    content = "Connect me to the other card!",
+                )
+            )
+        }
+    }
 
-To build and run the development version of the web app, use the run configuration from the run widget
-in your IDE's toolbar or run it directly from the terminal:
+    InfiniteCanvas(
+        viewModel = viewModel,
+        modifier = Modifier.fillMaxSize(),
+    )
+}
+```
 
-- for the Wasm target (faster, modern browsers):
-    - on macOS/Linux
-      ```shell
-      ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
-      ```
-    - on Windows
-      ```shell
-      .\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun
-      ```
-- for the JS target (slower, supports older browsers):
-    - on macOS/Linux
-      ```shell
-      ./gradlew :composeApp:jsBrowserDevelopmentRun
-      ```
-    - on Windows
-      ```shell
-      .\gradlew.bat :composeApp:jsBrowserDevelopmentRun
-      ```
+## Project Structure
 
-### Build and Run iOS Application
+```
+compose-infinite-canvas/
+├── infinite-canvas/          # Library module (publishable)
+│   └── src/commonMain/
+│       └── cn.nanosecond.compose.infinitecanvas/
+│           ├── CanvasElement.kt        # Element data models
+│           ├── Connection.kt           # Connection data model
+│           ├── ViewportState.kt        # Pan & zoom state
+│           ├── CanvasViewModel.kt      # Canvas state management
+│           ├── InfiniteCanvas.kt       # Main composable
+│           ├── CanvasContextMenu.kt    # Canvas right-click menu
+│           ├── ElementContextMenu.kt   # Element right-click menu
+│           ├── MenuPositionUtils.kt    # Menu positioning
+│           ├── connection/
+│           │   └── ConnectionRenderer.kt   # Bezier curve rendering
+│           ├── element/
+│           │   └── CardElementView.kt      # Card element UI
+│           └── gesture/
+│               └── CanvasGestureHandler.kt # Gesture handling
+├── composeApp/               # Demo application
+└── jitpack.yml               # JitPack build config
+```
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+## Build from Source
+
+```bash
+# Build the library
+./gradlew :infinite-canvas:build
+
+# Run the demo app (Desktop)
+./gradlew :composeApp:run
+```
+
+## License
+
+This project is open source. See the repository for license details.
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+# 中文文档
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack
-channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+一个基于 Compose Multiplatform 的无限画布库，可用于构建节点编辑器、白板和图表工具。
+
+## 功能特性
+
+- **无限画布** — 无边界的平移和缩放
+- **卡片元素** — 可拖拽的卡片，支持标题、内容和图片占位
+- **连接线** — 基于贝塞尔曲线的锚点连接
+- **手势操作** — 完整的手势支持：
+  - 点击选中，拖拽移动元素
+  - 从锚点拖拽创建连接线
+  - 点击连接线删除
+  - 框选（在空白区域拖拽）
+  - Ctrl+滚轮缩放，滚轮平移
+  - 触屏双指缩放
+  - 空格键临时切换平移模式
+- **右键菜单** — 画布和元素的上下文菜单
+- **多平台** — Android、iOS、桌面端 (JVM)、Web (JS/WASM)
+
+## 安装
+
+### JitPack
+
+在 `settings.gradle.kts` 中添加 JitPack 仓库：
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+}
+```
+
+在 `build.gradle.kts` 中添加依赖：
+
+```kotlin
+implementation("com.github.XingRay:compose-infinite-canvas:0.1.0")
+```
+
+> **注意：** JitPack 在 Linux 上构建，无法编译 iOS 目标。iOS 开发者需要从源码构建。
+
+## 使用示例
+
+```kotlin
+import cn.nanosecond.compose.infinitecanvas.*
+
+@Composable
+fun MyCanvas() {
+    val viewModel = remember {
+        CanvasViewModel().apply {
+            addElement(
+                CardElement(
+                    position = CanvasOffset(100f, 100f),
+                    title = "你好",
+                    content = "这是无限画布上的一张卡片。",
+                )
+            )
+            addElement(
+                CardElement(
+                    position = CanvasOffset(450f, 100f),
+                    title = "世界",
+                    content = "把我和另一张卡片连接起来！",
+                )
+            )
+        }
+    }
+
+    InfiniteCanvas(
+        viewModel = viewModel,
+        modifier = Modifier.fillMaxSize(),
+    )
+}
+```
+
+## 从源码构建
+
+```bash
+# 构建库
+./gradlew :infinite-canvas:build
+
+# 运行示例应用（桌面端）
+./gradlew :composeApp:run
+```
