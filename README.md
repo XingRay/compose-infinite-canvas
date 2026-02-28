@@ -22,9 +22,19 @@ A Compose Multiplatform infinite canvas library for building node-based editors,
 
 ## Installation
 
+### Maven Central (Recommended)
+
+All platforms including iOS and macOS are available from Maven Central.
+
+Add the dependency to your `build.gradle.kts`:
+
+```kotlin
+implementation("io.github.xingray:compose-infinite-canvas:0.1.2")
+```
+
 ### JitPack
 
-Add the JitPack repository to your `settings.gradle.kts`:
+Alternatively, you can use JitPack. Add the repository to your `settings.gradle.kts`:
 
 ```kotlin
 dependencyResolutionManagement {
@@ -36,13 +46,13 @@ dependencyResolutionManagement {
 }
 ```
 
-Add the dependency to your `build.gradle.kts`:
+Add the dependency:
 
 ```kotlin
 implementation("com.github.XingRay:compose-infinite-canvas:0.1.2")
 ```
 
-> **Note:** JitPack builds on Linux, so iOS targets are not available via JitPack. iOS developers should build from source.
+> **Note:** JitPack builds on Linux, so iOS/macOS targets are not available via JitPack.
 
 ## Usage
 
@@ -140,9 +150,19 @@ This project is open source. See the repository for license details.
 
 ## 安装
 
+### Maven Central（推荐）
+
+所有平台（包括 iOS 和 macOS）均可从 Maven Central 获取。
+
+在 `build.gradle.kts` 中添加依赖：
+
+```kotlin
+implementation("io.github.xingray:compose-infinite-canvas:0.1.2")
+```
+
 ### JitPack
 
-在 `settings.gradle.kts` 中添加 JitPack 仓库：
+也可以使用 JitPack。在 `settings.gradle.kts` 中添加仓库：
 
 ```kotlin
 dependencyResolutionManagement {
@@ -154,13 +174,13 @@ dependencyResolutionManagement {
 }
 ```
 
-在 `build.gradle.kts` 中添加依赖：
+添加依赖：
 
 ```kotlin
 implementation("com.github.XingRay:compose-infinite-canvas:0.1.2")
 ```
 
-> **注意：** JitPack 在 Linux 上构建，无法编译 iOS 目标。iOS 开发者需要从源码构建。
+> **注意：** JitPack 在 Linux 上构建，无法编译 iOS/macOS 目标。
 
 ## 使用示例
 

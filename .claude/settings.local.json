@@ -15,7 +15,14 @@
       "Bash(ls:*)",
       "Bash(./gradlew :infinite-canvas:jvmJar:*)",
       "Bash(./gradlew :composeApp:jvmJar:*)",
-      "Bash(./gradlew clean:*)"
+      "Bash(./gradlew clean:*)",
+      "WebFetch(domain:vanniktech.github.io)",
+      "WebFetch(domain:www.jetbrains.com)",
+      "WebFetch(domain:central.sonatype.org)",
+      "WebFetch(domain:tjuvblog-production.up.railway.app)",
+      "WebFetch(domain:simonscholz.dev)",
+      "WebFetch(domain:readmedium.com)",
+      "WebFetch(domain:dev.to)"
     ]
   }
 }

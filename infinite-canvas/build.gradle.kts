@@ -6,11 +6,8 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    `maven-publish`
+    alias(libs.plugins.mavenPublish)
 }
-
-group = "com.github.XingRay"
-version = "0.1.2"
 
 val isMacOs = System.getProperty("os.name").startsWith("Mac", ignoreCase = true)
 
@@ -47,6 +44,40 @@ kotlin {
             api(libs.compose.material3)
             api(libs.compose.ui)
             api(libs.androidx.lifecycle.viewmodelCompose)
+        }
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
+
+    coordinates("io.github.xingray", "compose-infinite-canvas", "0.1.2")
+
+    pom {
+        name.set("Compose Infinite Canvas")
+        description.set("An infinite canvas component for Compose Multiplatform")
+        url.set("https://github.com/XingRay/compose-infinite-canvas")
+
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+
+        developers {
+            developer {
+                id.set("XingRay")
+                name.set("XingRay")
+                url.set("https://github.com/XingRay")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/XingRay/compose-infinite-canvas")
+            connection.set("scm:git:git://github.com/XingRay/compose-infinite-canvas.git")
+            developerConnection.set("scm:git:ssh://git@github.com/XingRay/compose-infinite-canvas.git")
         }
     }
 }
