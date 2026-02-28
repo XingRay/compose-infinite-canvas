@@ -17,7 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,7 +60,7 @@ fun InfiniteCanvas(
     val cursorIcon = if (isPanMode) PointerIcon.Hand else PointerIcon.Default
 
     val focusRequester = remember { FocusRequester() }
-    var canvasSize = remember { IntSize.Zero }
+    var canvasSize by remember { mutableStateOf(IntSize.Zero) }
 
     // 自动获取焦点以接收键盘事件
     LaunchedEffect(Unit) {
@@ -125,6 +128,48 @@ fun InfiniteCanvas(
                 .padding(start = 16.dp, bottom = 16.dp)
                 .zIndex(10f),
         )
+
+        // 右键上下文菜单
+        val contextMenu = viewModel.contextMenuState
+        if (contextMenu != null) {
+            val dismissMenu: () -> Unit = {
+                viewModel.contextMenuState = null
+                focusRequester.requestFocus()
+            }
+
+            if (contextMenu.targetElementId != null) {
+                // 卡片菜单
+                val elementId = contextMenu.targetElementId
+                ElementContextMenu(
+                    state = contextMenu,
+                    canvasSize = canvasSize,
+                    onDismiss = dismissMenu,
+                    onCopy = { /* TODO */ },
+                    onCut = { /* TODO */ },
+                    onDelete = { viewModel.removeElement(elementId) },
+                    onDuplicate = { viewModel.duplicateElement(elementId) },
+                    onBringToFront = { viewModel.bringToFront(elementId) },
+                    onSendToBack = { viewModel.sendToBack(elementId) },
+                )
+            } else {
+                // 画布菜单
+                CanvasContextMenu(
+                    state = contextMenu,
+                    canvasSize = canvasSize,
+                    hasClipboard = false, // TODO: 接入剪贴板检测
+                    onDismiss = dismissMenu,
+                    onPaste = { /* TODO */ },
+                    onSelectAll = { viewModel.selectAll() },
+                    onExportPng = { /* TODO */ },
+                    onExportSvg = { /* TODO */ },
+                    onCopyPng = { /* TODO */ },
+                    onCopySvg = { /* TODO */ },
+                    onSubmenuToggle = { submenu ->
+                        viewModel.contextMenuState = contextMenu.copy(expandedSubmenu = submenu)
+                    },
+                )
+            }
+        }
     }
 }
 

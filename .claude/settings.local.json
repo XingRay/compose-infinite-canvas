@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(./gradlew.bat :composeApp:jvmMainClasses:*)",
-      "Bash(./gradlew.bat :composeApp:run:*)"
+      "Bash(./gradlew.bat :composeApp:run:*)",
+      "Bash(./gradlew.bat :composeApp:compileKotlinJvm:*)",
+      "WebSearch",
+      "WebFetch(domain:stackoverflow.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(jar tf:*)",
+      "Bash(./gradlew.bat:*)",
+      "Bash(rm:*)",
+      "Bash(./gradlew :composeApp:compileKotlinDesktop:*)",
+      "Bash(./gradlew :composeApp:compileKotlinJvm:*)"
     ]
   }
 }

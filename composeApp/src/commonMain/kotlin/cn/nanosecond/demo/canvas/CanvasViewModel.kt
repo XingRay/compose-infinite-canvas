@@ -10,7 +10,9 @@ import androidx.lifecycle.ViewModel
 import cn.nanosecond.demo.canvas.AnchorPosition
 import cn.nanosecond.demo.canvas.CanvasElement
 import cn.nanosecond.demo.canvas.CanvasOffset
+import cn.nanosecond.demo.canvas.CardElement
 import cn.nanosecond.demo.canvas.Connection
+import cn.nanosecond.demo.canvas.generateId
 
 class CanvasViewModel : ViewModel() {
     val viewport = ViewportState()
@@ -43,6 +45,9 @@ class CanvasViewModel : ViewModel() {
     /** 框选矩形 (屏幕坐标) */
     var selectionRect by mutableStateOf<SelectionRect?>(null)
         private set
+
+    /** 右键菜单状态 */
+    var contextMenuState by mutableStateOf<ContextMenuState?>(null)
 
     /** 当前生效的模式 */
     val effectiveMode: CanvasMode
@@ -80,6 +85,43 @@ class CanvasViewModel : ViewModel() {
         selectedElementIds = selectedElementIds - id
     }
 
+    /** 删除所有选中元素 */
+    fun removeSelectedElements() {
+        selectedElementIds.toList().forEach { removeElement(it) }
+    }
+
+    /** 复制副本 (偏移 20px) */
+    fun duplicateElement(id: String) {
+        val el = _elements.find { it.id == id } ?: return
+        val copy = el.copyWithPosition(
+            CanvasOffset(el.position.x + 20f, el.position.y + 20f)
+        )
+        // copyWithPosition 保留了原 id，需要生成新元素
+        val newEl = when (copy) {
+            is CardElement -> copy.copy(id = generateId())
+        }
+        _elements.add(newEl)
+        selectedElementIds = setOf(newEl.id)
+    }
+
+    /** 置于顶层 */
+    fun bringToFront(id: String) {
+        val index = _elements.indexOfFirst { it.id == id }
+        if (index >= 0 && index < _elements.lastIndex) {
+            val el = _elements.removeAt(index)
+            _elements.add(el)
+        }
+    }
+
+    /** 置于底层 */
+    fun sendToBack(id: String) {
+        val index = _elements.indexOfFirst { it.id == id }
+        if (index > 0) {
+            val el = _elements.removeAt(index)
+            _elements.add(0, el)
+        }
+    }
+
     fun updateElement(element: CanvasElement) {
         val index = _elements.indexOfFirst { it.id == element.id }
         if (index >= 0) _elements[index] = element
@@ -102,6 +144,10 @@ class CanvasViewModel : ViewModel() {
 
     fun selectElement(id: String?) {
         selectedElementIds = if (id != null) setOf(id) else emptySet()
+    }
+
+    fun selectAll() {
+        selectedElementIds = _elements.map { it.id }.toSet()
     }
 
     fun isSelected(id: String): Boolean = id in selectedElementIds
@@ -330,3 +376,11 @@ enum class DragMode {
 enum class CanvasMode {
     Select, Pan
 }
+
+/** 右键菜单状态 */
+data class ContextMenuState(
+    val screenPosition: Offset,
+    /** 右键命中的元素 ID, null 表示画布空白处 */
+    val targetElementId: String? = null,
+    val expandedSubmenu: String? = null,
+)
