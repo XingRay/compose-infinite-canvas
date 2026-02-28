@@ -12,6 +12,8 @@ plugins {
 group = "com.github.XingRay"
 version = "0.1.2"
 
+val isMacOs = System.getProperty("os.name").startsWith("Mac", ignoreCase = true)
+
 kotlin {
     androidTarget {
         compilerOptions {
@@ -29,6 +31,13 @@ kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
+    }
+
+    if (isMacOs) {
+        iosArm64()
+        iosSimulatorArm64()
+        macosArm64()
+        macosX64()
     }
 
     sourceSets {
