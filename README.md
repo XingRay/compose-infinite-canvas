@@ -22,37 +22,46 @@ A Compose Multiplatform infinite canvas library for building node-based editors,
 
 ## Installation
 
-### Maven Central (Recommended)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.xingray/compose-infinite-canvas)](https://central.sonatype.com/artifact/io.github.xingray/compose-infinite-canvas)
 
-All platforms including iOS and macOS are available from Maven Central.
-
-Add the dependency to your `build.gradle.kts`:
+### Gradle (Kotlin DSL)
 
 ```kotlin
 implementation("io.github.xingray:compose-infinite-canvas:0.1.2")
 ```
 
-### JitPack
+### Gradle Version Catalog
 
-Alternatively, you can use JitPack. Add the repository to your `settings.gradle.kts`:
+In `gradle/libs.versions.toml`:
 
-```kotlin
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-        maven("https://jitpack.io")
-    }
-}
+```toml
+[versions]
+composeInfiniteCanvas = "0.1.2"
+
+[libraries]
+compose-infinite-canvas = { module = "io.github.xingray:compose-infinite-canvas", version.ref = "composeInfiniteCanvas" }
 ```
 
-Add the dependency:
+Then in your module's `build.gradle.kts`:
 
 ```kotlin
-implementation("com.github.XingRay:compose-infinite-canvas:0.1.2")
+implementation(libs.compose.infinite.canvas)
 ```
 
-> **Note:** JitPack builds on Linux, so iOS/macOS targets are not available via JitPack.
+### Supported Platforms
+
+| Platform | Artifact |
+|----------|----------|
+| Android | `compose-infinite-canvas-android` |
+| JVM (Desktop) | `compose-infinite-canvas-jvm` |
+| iOS Arm64 | `compose-infinite-canvas-iosarm64` |
+| iOS Simulator | `compose-infinite-canvas-iossimulatorarm64` |
+| macOS Arm64 | `compose-infinite-canvas-macosarm64` |
+| macOS X64 | `compose-infinite-canvas-macosx64` |
+| JS (Browser) | `compose-infinite-canvas-js` |
+| WASM (Browser) | `compose-infinite-canvas-wasmjs` |
+
+> Gradle will automatically resolve the correct platform artifact. No need to specify them manually.
 
 ## Usage
 
@@ -150,37 +159,46 @@ This project is open source. See the repository for license details.
 
 ## 安装
 
-### Maven Central（推荐）
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.xingray/compose-infinite-canvas)](https://central.sonatype.com/artifact/io.github.xingray/compose-infinite-canvas)
 
-所有平台（包括 iOS 和 macOS）均可从 Maven Central 获取。
-
-在 `build.gradle.kts` 中添加依赖：
+### Gradle (Kotlin DSL)
 
 ```kotlin
 implementation("io.github.xingray:compose-infinite-canvas:0.1.2")
 ```
 
-### JitPack
+### Gradle Version Catalog
 
-也可以使用 JitPack。在 `settings.gradle.kts` 中添加仓库：
+在 `gradle/libs.versions.toml` 中添加：
 
-```kotlin
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-        maven("https://jitpack.io")
-    }
-}
+```toml
+[versions]
+composeInfiniteCanvas = "0.1.2"
+
+[libraries]
+compose-infinite-canvas = { module = "io.github.xingray:compose-infinite-canvas", version.ref = "composeInfiniteCanvas" }
 ```
 
-添加依赖：
+然后在模块的 `build.gradle.kts` 中引用：
 
 ```kotlin
-implementation("com.github.XingRay:compose-infinite-canvas:0.1.2")
+implementation(libs.compose.infinite.canvas)
 ```
 
-> **注意：** JitPack 在 Linux 上构建，无法编译 iOS/macOS 目标。
+### 支持的平台
+
+| 平台 | Artifact |
+|------|----------|
+| Android | `compose-infinite-canvas-android` |
+| JVM (桌面端) | `compose-infinite-canvas-jvm` |
+| iOS Arm64 | `compose-infinite-canvas-iosarm64` |
+| iOS Simulator | `compose-infinite-canvas-iossimulatorarm64` |
+| macOS Arm64 | `compose-infinite-canvas-macosarm64` |
+| macOS X64 | `compose-infinite-canvas-macosx64` |
+| JS (浏览器) | `compose-infinite-canvas-js` |
+| WASM (浏览器) | `compose-infinite-canvas-wasmjs` |
+
+> Gradle 会自动解析对应平台的 artifact，无需手动指定。
 
 ## 使用示例
 
