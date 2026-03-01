@@ -32,5 +32,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-include(":composeApp")
-include(":infinite-canvas")
+include(":compose-infinite-canvas-core")
+include(":sample")
+include(":sample-android")
