@@ -4,6 +4,8 @@ A Compose Multiplatform infinite canvas library for building node-based editors,
 
 [中文文档](#中文文档)
 
+![Demo Screenshot](docs/images/img.png)
+
 ## Features
 
 - **Infinite Canvas** — Pan and zoom with no boundaries
@@ -187,6 +189,8 @@ This project is open source. See the repository for license details.
 # 中文文档
 
 一个基于 Compose Multiplatform 的无限画布库，可用于构建节点编辑器、白板和图表工具。
+
+![Demo 截图](docs/images/img.png)
 
 ## 功能特性
 
